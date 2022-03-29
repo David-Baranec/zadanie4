@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="13412bf9-209a-43fa-bee7-cd737abca3a4" name="webte">
+        <fileTransfer accessType="SFTP" host="147.175.98.95" port="22" sshConfigId="dee95b34-889e-4b0c-8335-d331ff15a8ea" sshConfig="xkocian@147.175.98.95">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

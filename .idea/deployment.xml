@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" serverName="webte" remoteFilesAllowedToDisappearOnAutoupload="false">
+    <serverData>
+      <paths name="webte">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/var/www/site40.webte.fei.stuba.sk/zadanie4" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>
