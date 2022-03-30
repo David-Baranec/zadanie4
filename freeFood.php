@@ -16,7 +16,7 @@ if(!file_exists('./storage/freeFood.json')){
 $json = file_get_contents('./storage/freeFood.json');
 // Decode the JSON file
 $json_data = json_decode($json,true);
-$foodsKoliba = $json_data['data'];
+$foodsFreeFood = $json_data['data'];
 $interval = date_diff( DateTime::createFromFormat( 'U', $json_data['timestamp'] ), new DateTime());
 $timeDifference = (new DateTime())->getTimestamp() - $json_data['timestamp'];
 
@@ -35,8 +35,13 @@ if($timeDifference > 800 || $fileCreated) {
 
     @$dom->loadHTML($output);
     $dom->preserveWhiteSpace = false;
+    $finder = new DomXPath($dom);
+    $classname="footer";
+   // $contactDelikanti = $finder->query("//*[contains(@class, '$classname')]");
+   // $contactDelikanti = $contactDelikanti->item(0)->ChildNodes->item(0)->ChildNodes->item(1)->nodeValue;
+    
 
-    $foodsKoliba = [
+    $foodsFreeFood = [
         ["date" => date('d.m.Y', strtotime('monday this week')), "day" => "Pondelok", "menu" => []],
         ["date" => date('d.m.Y', strtotime('tuesday this week')), "day" => "Utorok", "menu" => []],
         ["date" => date('d.m.Y', strtotime('wednesday this week')), "day" => "Streda", "menu" => []],
@@ -57,13 +62,13 @@ if($timeDifference > 800 || $fileCreated) {
             if ($menuItem && $menuItem->childNodes->item(1) && $menuItem->childNodes->item(2) && ($index < 5)) {
                 $popis = trim($menuItem->childNodes->item(1)->nodeValue);
                 $cena = trim($menuItem->childNodes->item(2)->nodeValue);
-                array_push($foodsKoliba[$index]["menu"], "$popis: $cena");
+                array_push($foodsFreeFood[$index]["menu"], "$popis: $cena");
             }
         }
         $index++;
     }
 
-    $data = ["timestamp" => (new DateTime())->getTimestamp(), "data" => $foodsKoliba];
+    $data = ["timestamp" => (new DateTime())->getTimestamp(), "data" => $foodsFreeFood];
 
     $fp = fopen('./storage/freeFood.json', 'w');
     fwrite($fp, json_encode($data));
@@ -71,6 +76,6 @@ if($timeDifference > 800 || $fileCreated) {
 }
 
 //echo "<pre>";
-//var_dump($foodsKoliba);
+//var_dump($foodsFreeFood);
 //echo "</pre>";
 

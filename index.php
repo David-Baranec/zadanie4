@@ -26,15 +26,15 @@ $json_data = json_decode($json, true);
 
 $foods = $json_data['data'];
 $foodsEat = $jedla;
-
+$contactEatPrinted= $contactEat;
 $foodsPrinted = $foods;
 $foodsEatPrinted = $foodsEat;
-$foodsKolibaPrinted = $foodsKoliba;
+$foodsFreeFoodPrinted = $foodsFreeFood;
 
 $interval = date_diff(DateTime::createFromFormat('U', $json_data['timestamp']), new DateTime());
 $timeDifference = (new DateTime())->getTimestamp() - $json_data['timestamp'];
 
-if ($timeDifference > 800 || $fileCreated) {
+if ($timeDifference > 8 || $fileCreated) {
     $ch = curl_init();
 
     // set url
@@ -53,6 +53,10 @@ if ($timeDifference > 800 || $fileCreated) {
 
     @$dom->loadHTML($output);
     $dom->preserveWhiteSpace = false;
+    $finder = new DomXPath($dom);
+    $classname="col-xs-12 col-md-4 col-md-offset-1 col-lg-4 col-lg-offset-1 single-footer";
+    $contactDelikanti = $finder->query("//*[contains(@class, '$classname')]");
+    $contactDelikanti = $contactDelikanti->item(0)->nodeValue;
     $tables = $dom->getElementsByTagName('table');
 
     $rows = $tables->item(0)->getElementsByTagName('tr');
@@ -104,18 +108,32 @@ if ($timeDifference > 800 || $fileCreated) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>JEDLO</title>
+    <link rel="icon" href="favicon.png">
+ 
+    <title>Menu</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 </head>
 
 <body class=" bg-dark text-white">
     <br><br>
     <div class="container bg-secondary text-white">
-        <h1 class="text-center text-white">FEI surrounding restaurants daily menu</h1>
-        <table class="table text-white">
+        <h1 class="text-center text-white">FEI faculty surrounding restaurants daily menu</h1>
+        <br>
+        <p class="text-center text-white">You can sort out menu by clicking the header of table by separate day. To show whole menu again click on 'restaurant' header.</p>
+        <br>
+        <p class=" text-white">FREEFOOD:     Pavilón Matematiky  Fakulta matematiky, fyziky a informatiky UK  Mlynská dolina  842 48 Bratislava</p>
+        <p class=" text-white">DELIKANTI:    Delikanti s.r.o.; Nám.Hraničiarov 35; 851 03 Bratislava</p>
+        <p class=" text-white">EAT AND MEET:    Staré Grunty 36; Átriaky, Blok AD-U</p>
+       
+       <?php 
+           // echo "<div>Eat and meet: ".$contactEatPrinted."</div>";
+            //echo "<div>Delikanti: ".$contactDelikanti."</div>"
+        ?>
+        
+        <table class="table table-striped table-responsive text-white">
             <thead class="thead-dark">
                 <tr>
-                    <th style='cursor: pointer' onclick="showAll()">All week</th>
+                    <th style='cursor: pointer' onclick="showAll()">Restaurant</th>
                     <?php
                     $index = 0;
 
@@ -129,14 +147,15 @@ if ($timeDifference > 800 || $fileCreated) {
                 </tr>
             </thead>
             <tbody>
+               
                 <tr>
-                    <th>Eat and meet</th>
+                    <th>Delikanti</th>
                     <?php
                     $index = 0;
 
-                    foreach ($foodsEatPrinted as $item) {
+                    foreach ($foodsPrinted as $item) {
                         if (isset($item['menu'])) {
-                            echo "<td class= 'text-white' style='padding: 10px'><div id='col-eat-$index'>" . implode("<hr/>", $item['menu']) . "</div></td>";
+                            echo "<td class= 'text-white' style='padding: 10px'><div id='column_delikanti-$index'>" . implode("<hr/>", $item['menu']) . "</div></td>";
                         }
 
                         $index++;
@@ -144,14 +163,14 @@ if ($timeDifference > 800 || $fileCreated) {
                     ?>
                 </tr>
                 <tr>
-                <hr>
-                    <th>Delikanti</th>
+                    <hr>
+                     <th>Eat and meet</th> 
                     <?php
                     $index = 0;
 
-                    foreach ($foodsPrinted as $item) {
+                    foreach ($foodsEatPrinted as $item) {
                         if (isset($item['menu'])) {
-                            echo "<td class= 'text-white' style='padding: 10px'><div id='col-del-$index'>" . implode("<hr/>", $item['menu']) . "</div></td>";
+                            echo "<td class= 'text-white' style='padding: 10px'><div id='column_eatAndMMeet-$index'>" . implode("<hr/>", $item['menu']) . "</div></td>";
                         }
 
                         $index++;
@@ -165,9 +184,9 @@ if ($timeDifference > 800 || $fileCreated) {
                     <?php
                     $index = 0;
 
-                    foreach ($foodsKolibaPrinted as $item) {
+                    foreach ($foodsFreeFoodPrinted as $item) {
                         if (isset($item['menu'])) {
-                            echo "<td class= 'text-white' id='col-$index' style='padding: 10px'><div id='col-kol-$index'>" . implode("<hr/>", $item['menu']) . "</div></td>";
+                            echo "<td class= 'text-white' id='col-$index' style='padding: 10px'><div id='column_koliba-$index'>" . implode("<hr/>", $item['menu']) . "</div></td>";
                         }
 
                         $index++;
@@ -184,22 +203,22 @@ if ($timeDifference > 800 || $fileCreated) {
 
             for (let i = 0; i < 7; i++) {
                 if (i !== id) {
-                    document.querySelector("#col-eat-" + i).style.display = 'none';
-                    document.querySelector("#col-del-" + i).style.display = 'none';
-                    document.querySelector("#col-kol-" + i).style.display = 'none';
+                    document.querySelector("#column_eatAndMMeet" + i).style.display = 'none';
+                    document.querySelector("#column_delikanti" + i).style.display = 'none';
+                    document.querySelector("#column_koliba" + i).style.display = 'none';
                 } else {
-                    document.querySelector("#col-eat-" + i).style.display = 'table-cell';
-                    document.querySelector("#col-del-" + i).style.display = 'table-cell';
-                    document.querySelector("#col-kol-" + i).style.display = 'table-cell';
+                    document.querySelector("#column_eatAndMMeet" + i).style.display = 'table-cell';
+                    document.querySelector("#column_delikanti" + i).style.display = 'table-cell';
+                    document.querySelector("#column_koliba" + i).style.display = 'table-cell';
                 }
             }
         }
 
         const showAll = () => {
             for (let i = 0; i < 7; i++) {
-                document.querySelector("#col-eat-" + i).style.display = 'table-cell';
-                document.querySelector("#col-del-" + i).style.display = 'table-cell';
-                document.querySelector("#col-kol-" + i).style.display = 'table-cell';
+                document.querySelector("#column_eatAndMeet" + i).style.display = 'table-cell';
+                document.querySelector("#column_delikanti" + i).style.display = 'table-cell';
+                document.querySelector("#column_koliba" + i).style.display = 'table-cell';
             }
         }
     </script>

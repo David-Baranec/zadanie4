@@ -1,4 +1,7 @@
 <?php
+/*ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);*/
 $fileCreated = false;
 
 // Read the JSON file
@@ -21,11 +24,11 @@ $timeDifference = 0;
 $json_data = json_decode($json,true);
 
 $jedla = $json_data['data'];
-
+$contactEat=$json_data['contact'];
 $interval = date_diff( DateTime::createFromFormat( 'U', $json_data['timestamp'] ), new DateTime());
 $timeDifference = (new DateTime())->getTimestamp() - $json_data['timestamp'];
 
-if($timeDifference > 800 || $fileCreated) {
+if($timeDifference > 8 || $fileCreated) {
     $ch = curl_init();
 
 // set url
@@ -44,7 +47,11 @@ if($timeDifference > 800 || $fileCreated) {
 
     @$dom->loadHTML($output);
     $dom->preserveWhiteSpace = false;
-
+    $finder = new DomXPath($dom);
+    $classname="contact";
+    $contact = $finder->query("//*[contains(@class, '$classname')]");
+    $contact=$contact->item(0)->nodeValue;
+    
     $parseNodes = ["day-1", "day-2", "day-3", "day-4", "day-5", "day-6", "day-7"];
 
     $jedla = [
@@ -71,7 +78,7 @@ if($timeDifference > 800 || $fileCreated) {
         }
     }
 
-    $data = ["timestamp" => (new DateTime())->getTimestamp(), "data" => $jedla];
+    $data = ["timestamp" => (new DateTime())->getTimestamp(), "data" => $jedla, "contact"=>$contact];
 
     $fp = fopen('./storage/file.json', 'w');
     fwrite($fp, json_encode($data));
